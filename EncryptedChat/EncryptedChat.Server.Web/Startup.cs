@@ -4,6 +4,8 @@ namespace EncryptedChat.Server.Web
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Services;
+    using Services.Implementations;
 
     public class Startup
     {
@@ -16,7 +18,7 @@ namespace EncryptedChat.Server.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddSingleton<IChatService, ChatService>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
