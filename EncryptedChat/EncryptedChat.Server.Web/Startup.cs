@@ -1,5 +1,6 @@
 namespace EncryptedChat.Server.Web
 {
+    using Hubs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
@@ -18,6 +19,8 @@ namespace EncryptedChat.Server.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSignalR();
+
             services.AddSingleton<IChatService, ChatService>();
         }
 
@@ -34,6 +37,8 @@ namespace EncryptedChat.Server.Web
             }
 
             app.UseHttpsRedirection();
+
+            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chat"));
         }
     }
 }
