@@ -155,6 +155,8 @@ namespace EncryptedChat.Client.App
             Console.WriteLine();
             Console.WriteLine(Messages.ConnectedWithUser, selectedUser.Username);
             Console.WriteLine();
+            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
+            Console.WriteLine();
         }
 
         private void UpdateWaitingList(User[] users)
@@ -219,6 +221,8 @@ namespace EncryptedChat.Client.App
 
             Console.WriteLine();
             Console.WriteLine(Messages.ConnectedWithUser, otherUsername);
+            Console.WriteLine();
+            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
             Console.WriteLine();
         }
 

@@ -17,6 +17,7 @@ namespace EncryptedChat.Client.App
         public const string GeneratingKeyPair = "Generating keypair...";
         public const string SendingKeyToServer = "Sending public key to server...";
         public const string WaitingForUser = "Waiting for other user";
+        public const string KeyFingerprint = "Fingerprint: {0}";
         public const string MessageFormat = "<{0}> {1}";
     }
 }
