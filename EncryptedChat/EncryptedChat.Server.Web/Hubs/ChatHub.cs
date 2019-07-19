@@ -26,11 +26,13 @@ namespace EncryptedChat.Server.Web.Hubs
             await this.UpdateClientWaitingList();
         }
 
-        private async Task UpdateClientWaitingList()
+        private async Task UpdateClientWaitingList(string recipientId = null)
         {
             var freeUsers = this.chatService.GetWaitingUsers();
 
-            await this.Clients.All.SendCoreAsync("UpdateWaitingList", new object[] {freeUsers});
+            var recipient = recipientId == null ? this.Clients.All : this.Clients.Client(recipientId);
+
+            await recipient.SendCoreAsync("UpdateWaitingList", new object[] {freeUsers});
         }
 
         public async Task ConnectToUser(string username, string otherConnectionId, string key)
@@ -64,16 +66,19 @@ namespace EncryptedChat.Server.Web.Hubs
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
+            bool isWaiting = this.chatService.IsWaiting(this.Context.ConnectionId);
+
             var otherUserConnectionId = this.chatService.RemoveUserByConnectionId(this.Context.ConnectionId);
 
             if (otherUserConnectionId != null)
             {
                 await this.Clients.Client(otherUserConnectionId).SendCoreAsync("Disconnect", new object[0]);
-
-                this.chatService.RemoveUserByConnectionId(otherUserConnectionId);
             }
 
-            await this.UpdateClientWaitingList();
+            if (isWaiting)
+            {
+                await this.UpdateClientWaitingList();
+            }
 
             await base.OnDisconnectedAsync(exception);
         }
@@ -82,7 +87,7 @@ namespace EncryptedChat.Server.Web.Hubs
         {
             await base.OnConnectedAsync();
 
-            await this.UpdateClientWaitingList();
+            await this.UpdateClientWaitingList(this.Context.ConnectionId);
         }
     }
 }
