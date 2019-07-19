@@ -75,6 +75,18 @@ namespace EncryptedChat.Server.Web.Services.Implementations
             return this.users.SingleOrDefault(u => u.ConnectionId == connectionId);
         }
 
+        public bool IsWaiting(string connectionId)
+        {
+            var user = this.users.SingleOrDefault(u => u.ConnectionId == connectionId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return user.OtherUserConnectionId == null;
+        }
+
         public string RemoveUserByConnectionId(string connectionId)
         {
             if (connectionId == null)
@@ -102,7 +114,7 @@ namespace EncryptedChat.Server.Web.Services.Implementations
 
             if (otherUser != null)
             {
-                otherUser.OtherUserConnectionId = null;
+                this.users.Remove(otherUser);
             }
 
             return otherConnectionId;

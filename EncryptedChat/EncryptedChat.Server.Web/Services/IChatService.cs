@@ -14,5 +14,7 @@ namespace EncryptedChat.Server.Web.Services
         User GetUserByConnectionId(string connectionId);
 
         string RemoveUserByConnectionId(string connectionId);
+
+        bool IsWaiting(string connectionId);
     }
 }
