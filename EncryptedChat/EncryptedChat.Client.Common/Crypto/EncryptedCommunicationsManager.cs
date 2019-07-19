@@ -58,5 +58,7 @@ namespace EncryptedChat.Client.Common.Crypto
             var aes1KeyDec = this.rsa.DecryptDataAsByteArray(key);
             this.aes.LoadKey(aes1KeyDec);
         }
+
+        public string GetRsaFingerprint() => this.rsa.GetSha256Fingerprint();
     }
 }
