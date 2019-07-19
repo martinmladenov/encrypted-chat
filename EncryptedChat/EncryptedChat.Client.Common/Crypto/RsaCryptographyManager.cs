@@ -165,5 +165,35 @@ namespace EncryptedChat.Client.Common.Crypto
 
             return parameters;
         }
+
+        public string GetSha256Fingerprint()
+        {
+            if (this.rsa == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var rsaParams = this.rsa.ExportParameters(false);
+
+            byte[] hashBytes;
+            using (SHA256 sha256 = new SHA256Managed())
+            {
+                hashBytes = sha256.ComputeHash(rsaParams.Modulus);
+            }
+
+            var sb = new StringBuilder(95);
+            for (var i = 0; i < hashBytes.Length; i++)
+            {
+                byte b = hashBytes[i];
+                sb.Append(b.ToString("X2"));
+
+                if (i < hashBytes.Length - 1)
+                {
+                    sb.Append(':');
+                }
+            }
+
+            return sb.ToString();
+        }
     }
 }
