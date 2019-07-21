@@ -19,5 +19,6 @@ namespace EncryptedChat.Client.App
         public const string WaitingForUser = "Waiting for other user";
         public const string KeyFingerprint = "Fingerprint: {0}";
         public const string MessageFormat = "<{0}> {1}";
+        public const string LoadingConfiguration = "Loading configuration...";
     }
 }

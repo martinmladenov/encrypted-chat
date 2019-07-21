@@ -3,6 +3,7 @@ namespace EncryptedChat.Client.App
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Common.Configuration;
     using Common.Crypto;
     using Microsoft.AspNetCore.SignalR.Client;
     using Models;
@@ -11,6 +12,7 @@ namespace EncryptedChat.Client.App
     {
         private HubConnection connection;
         private EncryptedCommunicationsManager communicationsManager;
+        private ConfigurationManager<MainConfiguration> configurationManager;
 
         private User[] waitingUsers;
         private string username;
@@ -49,8 +51,17 @@ namespace EncryptedChat.Client.App
             return input;
         }
 
+        private void LoadConfiguration()
+        {
+            Console.WriteLine(Messages.LoadingConfiguration);
+
+            this.configurationManager = new ConfigurationManager<MainConfiguration>(Constants.ConfigurationFilePath);
+        }
+
         public async Task Setup()
         {
+            this.LoadConfiguration();
+
             this.username = GetUsername();
 
             await this.SetUpConnection();
