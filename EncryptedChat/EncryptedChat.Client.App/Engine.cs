@@ -17,6 +17,7 @@ namespace EncryptedChat.Client.App
         private User[] waitingUsers;
         private string username;
         private State state;
+        private User otherUser;
 
         private async Task SetUpConnection()
         {
@@ -103,6 +104,12 @@ namespace EncryptedChat.Client.App
                         await this.UserSelect(input);
                         break;
                     case State.InChat:
+                        if (input == Constants.TrustCommand)
+                        {
+                            this.TrustCurrentUser();
+                            break;
+                        }
+
                         await this.SendMessage(input);
                         break;
                 }
@@ -169,11 +176,69 @@ namespace EncryptedChat.Client.App
                 this.username, selectedUser.ConnectionId, aesKey
             });
 
+            this.otherUser = selectedUser;
+
+            bool isTrusted = this.IsUserTrusted(this.otherUser);
+
+            string trustedBadge = isTrusted
+                ? Messages.UserTrustedBadge
+                : Messages.UserNotTrustedBadge;
+
             Console.WriteLine();
-            Console.WriteLine(Messages.ConnectedWithUser, selectedUser.Username);
+            Console.WriteLine(Messages.ConnectedWithUser, selectedUser.Username, trustedBadge);
             Console.WriteLine();
             Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
             Console.WriteLine();
+
+            if (!isTrusted)
+            {
+                Console.WriteLine(new string('-', 30));
+                Console.WriteLine();
+                Console.WriteLine(Messages.UserNotTrustedMessage);
+                Console.WriteLine();
+                Console.WriteLine(new string('-', 30));
+                Console.WriteLine();
+            }
+        }
+
+        private bool IsUserTrusted(User user)
+        {
+            if (!this.configurationManager.Configuration.TrustedUsers.ContainsKey(user.Username))
+            {
+                return false;
+            }
+
+            string keyHash = HashingUtil.GetSha256Hash(user.PublicKey);
+
+            return this.configurationManager.Configuration.TrustedUsers[user.Username] == keyHash;
+        }
+
+        private void TrustCurrentUser()
+        {
+            bool result = this.TrustUser(this.otherUser);
+
+            Console.WriteLine(result ? Messages.UserTrusted : Messages.CouldNotTrustUser);
+        }
+
+        private bool TrustUser(User user)
+        {
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (this.configurationManager.Configuration.TrustedUsers.ContainsKey(user.Username))
+            {
+                return false;
+            }
+
+            string keyHash = HashingUtil.GetSha256Hash(user.PublicKey);
+
+            this.configurationManager.Configuration.TrustedUsers.Add(user.Username, keyHash);
+
+            this.configurationManager.SaveChanges();
+
+            return true;
         }
 
         private void UpdateWaitingList(User[] users)
@@ -196,11 +261,15 @@ namespace EncryptedChat.Client.App
             {
                 for (int i = 0; i < users.Length; i++)
                 {
-                    Console.WriteLine(Messages.UserListItem, i + 1, users[i].Username);
+                    string trustedBadge = this.IsUserTrusted(users[i])
+                        ? Messages.UserTrustedBadge
+                        : Messages.UserNotTrustedBadge;
+
+                    Console.WriteLine(Messages.UserListItem, i + 1, users[i].Username, trustedBadge);
                 }
             }
 
-            Console.WriteLine(Messages.UserListItem, 0, Messages.UserListJoin);
+            Console.WriteLine(Messages.UserListJoin);
         }
 
         private async Task JoinAsWaitingUser()
@@ -258,7 +327,7 @@ namespace EncryptedChat.Client.App
             this.state = State.InChat;
 
             Console.WriteLine();
-            Console.WriteLine(Messages.ConnectedWithUser, otherUsername);
+            Console.WriteLine(Messages.ConnectedWithUser, otherUsername, Messages.UserNotTrustedBadge); // TODO 
             Console.WriteLine();
             Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
             Console.WriteLine();
