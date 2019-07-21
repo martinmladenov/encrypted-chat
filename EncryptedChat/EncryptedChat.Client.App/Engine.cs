@@ -38,17 +38,23 @@ namespace EncryptedChat.Client.App
             Console.WriteLine(Messages.Connected);
         }
 
-        private static string GetUsername()
+        private void LoadUsername()
         {
-            string input;
+            this.username = this.configurationManager.Configuration.Username;
+
+            if (!string.IsNullOrWhiteSpace(this.username))
+            {
+                return;
+            }
 
             do
             {
                 Console.Write(Messages.UsernamePrompt);
-                input = Console.ReadLine();
-            } while (string.IsNullOrWhiteSpace(input));
+                this.username = Console.ReadLine();
+            } while (string.IsNullOrWhiteSpace(this.username));
 
-            return input;
+            this.configurationManager.Configuration.Username = this.username;
+            this.configurationManager.SaveChanges();
         }
 
         private void LoadConfiguration()
@@ -56,13 +62,13 @@ namespace EncryptedChat.Client.App
             Console.WriteLine(Messages.LoadingConfiguration);
 
             this.configurationManager = new ConfigurationManager<MainConfiguration>(Constants.ConfigurationFilePath);
+
+            this.LoadUsername();
         }
 
         public async Task Setup()
         {
             this.LoadConfiguration();
-
-            this.username = GetUsername();
 
             await this.SetUpConnection();
 
