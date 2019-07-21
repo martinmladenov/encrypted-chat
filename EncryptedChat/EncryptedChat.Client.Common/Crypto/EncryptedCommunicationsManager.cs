@@ -34,12 +34,10 @@ namespace EncryptedChat.Client.Common.Crypto
             return decrypted;
         }
 
-        public string GenerateRsaKey()
-        {
-            this.rsa.GenerateNewKey();
+        public void GenerateNewRsaKey() => this.rsa.GenerateNewKey();
 
-            return this.rsa.ExportKeyAsXml();
-        }
+        public string ExportRsaKey(bool includePrivate = false)
+            => this.rsa.ExportKeyAsXml(includePrivate);
 
         public void ImportRsaKey(string key)
         {

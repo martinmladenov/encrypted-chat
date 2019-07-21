@@ -15,6 +15,7 @@ namespace EncryptedChat.Client.App
         public const string UserListJoin = "Join";
         public const string UserListNoUsers = "None";
         public const string GeneratingKeyPair = "Generating keypair...";
+        public const string LoadingPrivateKey = "Loading private key...";
         public const string SendingKeyToServer = "Sending public key to server...";
         public const string WaitingForUser = "Waiting for other user";
         public const string KeyFingerprint = "Fingerprint: {0}";

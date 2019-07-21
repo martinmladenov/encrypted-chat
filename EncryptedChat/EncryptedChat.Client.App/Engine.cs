@@ -205,9 +205,9 @@ namespace EncryptedChat.Client.App
 
         private async Task JoinAsWaitingUser()
         {
-            Console.WriteLine(Messages.GeneratingKeyPair);
+            this.LoadPrivateKey();
 
-            string pubKey = this.communicationsManager.GenerateRsaKey();
+            string pubKey = this.communicationsManager.ExportRsaKey();
 
             Console.WriteLine(Messages.SendingKeyToServer);
 
@@ -221,6 +221,27 @@ namespace EncryptedChat.Client.App
             Console.Clear();
 
             Console.WriteLine(Messages.WaitingForUser);
+        }
+
+        private void LoadPrivateKey()
+        {
+            if (this.configurationManager.Configuration.PrivateKey == null)
+            {
+                Console.WriteLine(Messages.GeneratingKeyPair);
+
+                this.communicationsManager.GenerateNewRsaKey();
+
+                this.configurationManager.Configuration.PrivateKey =
+                    this.communicationsManager.ExportRsaKey(true);
+
+                this.configurationManager.SaveChanges();
+            }
+            else
+            {
+                Console.WriteLine(Messages.LoadingPrivateKey);
+
+                this.communicationsManager.ImportRsaKey(this.configurationManager.Configuration.PrivateKey);
+            }
         }
 
         private void AcceptConnection(string key, string otherUsername)
