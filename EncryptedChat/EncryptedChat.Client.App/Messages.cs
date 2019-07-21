@@ -25,5 +25,8 @@ namespace EncryptedChat.Client.App
         public const string LoadingConfiguration = "Loading configuration...";
         public const string UserTrusted = "User trusted.";
         public const string CouldNotTrustUser = "Could not trust user";
+
+        public const string UserNotTrustedMessage = "User not trusted. Verify key fingerprint and type "
+                                                   + Constants.TrustCommand + " to trust user";
     }
 }

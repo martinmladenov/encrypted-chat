@@ -178,7 +178,9 @@ namespace EncryptedChat.Client.App
 
             this.otherUser = selectedUser;
 
-            string trustedBadge = this.IsUserTrusted(this.otherUser)
+            bool isTrusted = this.IsUserTrusted(this.otherUser);
+
+            string trustedBadge = isTrusted
                 ? Messages.UserTrustedBadge
                 : Messages.UserNotTrustedBadge;
 
@@ -187,6 +189,16 @@ namespace EncryptedChat.Client.App
             Console.WriteLine();
             Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
             Console.WriteLine();
+
+            if (!isTrusted)
+            {
+                Console.WriteLine(new string('-', 30));
+                Console.WriteLine();
+                Console.WriteLine(Messages.UserNotTrustedMessage);
+                Console.WriteLine();
+                Console.WriteLine(new string('-', 30));
+                Console.WriteLine();
+            }
         }
 
         private bool IsUserTrusted(User user)
@@ -223,7 +235,7 @@ namespace EncryptedChat.Client.App
             string keyHash = HashingUtil.GetSha256Hash(user.PublicKey);
 
             this.configurationManager.Configuration.TrustedUsers.Add(user.Username, keyHash);
-            
+
             this.configurationManager.SaveChanges();
 
             return true;
