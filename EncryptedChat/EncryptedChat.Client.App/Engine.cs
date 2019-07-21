@@ -249,11 +249,15 @@ namespace EncryptedChat.Client.App
             {
                 for (int i = 0; i < users.Length; i++)
                 {
-                    Console.WriteLine(Messages.UserListItem, i + 1, users[i].Username);
+                    string trustedBadge = this.IsUserTrusted(users[i])
+                        ? Messages.UserTrustedBadge
+                        : Messages.UserNotTrustedBadge;
+
+                    Console.WriteLine(Messages.UserListItem, i + 1, users[i].Username, trustedBadge);
                 }
             }
 
-            Console.WriteLine(Messages.UserListItem, 0, Messages.UserListJoin);
+            Console.WriteLine(Messages.UserListJoin);
         }
 
         private async Task JoinAsWaitingUser()

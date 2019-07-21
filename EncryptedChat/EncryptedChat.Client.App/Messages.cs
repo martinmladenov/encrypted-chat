@@ -11,8 +11,8 @@ namespace EncryptedChat.Client.App
         public const string InitialisingEncryptedConnection = "Initialising encrypted connection...";
         public const string ConnectedWithUser = "Connected with {0} - {1}!";
         public const string UserListHeader = "Users:";
-        public const string UserListItem = "{0} - {1}";
-        public const string UserListJoin = "Join";
+        public const string UserListItem = "{0} - {1} {2}";
+        public const string UserListJoin = "0 - join waiting list";
         public const string UserTrustedBadge = "[trusted]";
         public const string UserNotTrustedBadge = "[not trusted]";
         public const string UserListNoUsers = "None";
