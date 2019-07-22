@@ -21,8 +21,6 @@ namespace EncryptedChat.Client.App
 
         private async Task SetUpConnection()
         {
-            this.communicationsManager = new EncryptedCommunicationsManager();
-
             Console.WriteLine(Messages.ConnectingToServer, Constants.ServerUrl);
 
             this.connection = new HubConnectionBuilder()
@@ -65,6 +63,10 @@ namespace EncryptedChat.Client.App
             this.configurationManager = new ConfigurationManager<MainConfiguration>(Constants.ConfigurationFilePath);
 
             this.LoadUsername();
+
+            this.communicationsManager = new EncryptedCommunicationsManager();
+
+            this.LoadPrivateKey();
         }
 
         public async Task Setup()
@@ -274,8 +276,6 @@ namespace EncryptedChat.Client.App
 
         private async Task JoinAsWaitingUser()
         {
-            this.LoadPrivateKey();
-
             string pubKey = this.communicationsManager.ExportRsaKey();
 
             Console.WriteLine(Messages.SendingKeyToServer);
