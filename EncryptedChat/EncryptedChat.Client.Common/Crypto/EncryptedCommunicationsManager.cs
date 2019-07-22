@@ -4,12 +4,14 @@ namespace EncryptedChat.Client.Common.Crypto
     {
         private const char Delimiter = '-';
 
-        private readonly RsaCryptographyManager rsa;
+        private readonly RsaCryptographyManager otherRsa;
+        private readonly RsaCryptographyManager ownRsa;
         private readonly AesCryptographyManager aes;
 
         public EncryptedCommunicationsManager()
         {
-            this.rsa = new RsaCryptographyManager();
+            this.otherRsa = new RsaCryptographyManager();
+            this.ownRsa = new RsaCryptographyManager();
             this.aes = new AesCryptographyManager();
         }
 
@@ -34,29 +36,36 @@ namespace EncryptedChat.Client.Common.Crypto
             return decrypted;
         }
 
-        public void GenerateNewRsaKey() => this.rsa.GenerateNewKey();
+        public void GenerateNewRsaKey() => this.ownRsa.GenerateNewKey();
 
-        public string ExportRsaKey(bool includePrivate = false)
-            => this.rsa.ExportKeyAsXml(includePrivate);
+        public string ExportOwnRsaKey(bool includePrivate = false)
+            => this.ownRsa.ExportKeyAsXml(includePrivate);
 
-        public void ImportRsaKey(string key)
+        public void ImportOwnRsaKey(string key)
         {
-            this.rsa.LoadKeyFromXml(key);
+            this.ownRsa.LoadKeyFromXml(key);
+        }
+
+        public void ImportOtherRsaKey(string key)
+        {
+            this.otherRsa.LoadKeyFromXml(key);
         }
 
         public string GenerateEncryptedAesKey()
         {
             var aesKey = this.aes.GenerateKey();
-            var encryptedKey = this.rsa.EncryptData(aesKey);
+            var encryptedKey = this.otherRsa.EncryptData(aesKey);
             return encryptedKey;
         }
 
         public void ImportEncryptedAesKey(string key)
         {
-            var aes1KeyDec = this.rsa.DecryptDataAsByteArray(key);
+            var aes1KeyDec = this.ownRsa.DecryptDataAsByteArray(key);
             this.aes.LoadKey(aes1KeyDec);
         }
 
-        public string GetRsaFingerprint() => this.rsa.GetSha256Fingerprint();
+        public string GetOwnRsaFingerprint() => this.ownRsa.GetSha256Fingerprint();
+        
+        public string GetOtherRsaFingerprint() => this.otherRsa.GetSha256Fingerprint();
     }
 }

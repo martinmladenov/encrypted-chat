@@ -168,7 +168,7 @@ namespace EncryptedChat.Client.App
             Console.Clear();
             Console.WriteLine(Messages.GeneratingSessionKey);
 
-            this.communicationsManager.ImportRsaKey(selectedUser.PublicKey);
+            this.communicationsManager.ImportOtherRsaKey(selectedUser.PublicKey);
             string aesKey = this.communicationsManager.GenerateEncryptedAesKey();
 
             Console.WriteLine(Messages.InitialisingEncryptedConnection);
@@ -189,7 +189,7 @@ namespace EncryptedChat.Client.App
             Console.WriteLine();
             Console.WriteLine(Messages.ConnectedWithUser, selectedUser.Username, trustedBadge);
             Console.WriteLine();
-            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
+            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetOtherRsaFingerprint());
             Console.WriteLine();
 
             if (!isTrusted)
@@ -276,7 +276,7 @@ namespace EncryptedChat.Client.App
 
         private async Task JoinAsWaitingUser()
         {
-            string pubKey = this.communicationsManager.ExportRsaKey();
+            string pubKey = this.communicationsManager.ExportOwnRsaKey();
 
             Console.WriteLine(Messages.SendingKeyToServer);
 
@@ -301,7 +301,7 @@ namespace EncryptedChat.Client.App
                 this.communicationsManager.GenerateNewRsaKey();
 
                 this.configurationManager.Configuration.PrivateKey =
-                    this.communicationsManager.ExportRsaKey(true);
+                    this.communicationsManager.ExportOwnRsaKey(true);
 
                 this.configurationManager.SaveChanges();
             }
@@ -309,7 +309,7 @@ namespace EncryptedChat.Client.App
             {
                 Console.WriteLine(Messages.LoadingPrivateKey);
 
-                this.communicationsManager.ImportRsaKey(this.configurationManager.Configuration.PrivateKey);
+                this.communicationsManager.ImportOwnRsaKey(this.configurationManager.Configuration.PrivateKey);
             }
         }
 
@@ -329,7 +329,7 @@ namespace EncryptedChat.Client.App
             Console.WriteLine();
             Console.WriteLine(Messages.ConnectedWithUser, otherUsername, Messages.UserNotTrustedBadge); // TODO 
             Console.WriteLine();
-            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
+            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetOwnRsaFingerprint());
             Console.WriteLine();
         }
 
