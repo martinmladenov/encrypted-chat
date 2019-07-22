@@ -59,6 +59,33 @@ namespace EncryptedChat.Client.Common.Crypto
                 RSAEncryptionPadding.OaepSHA256);
         }
 
+        public string SignData(string data)
+        {
+            if (this.rsa == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var signature = this.rsa.SignData(Encoding.UTF8.GetBytes(data),
+                HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+
+            return Convert.ToBase64String(signature);
+        }
+
+        public bool VerifySignature(string data, string signature)
+        {
+            if (this.rsa == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var isValid = this.rsa.VerifyData(Encoding.UTF8.GetBytes(data),
+                Convert.FromBase64String(signature),
+                HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+
+            return isValid;
+        }
+
         public void GenerateNewKey(int keySize = 4096)
         {
             this.rsa = RSA.Create(keySize);
