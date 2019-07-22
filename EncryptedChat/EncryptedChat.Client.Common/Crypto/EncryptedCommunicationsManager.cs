@@ -58,6 +58,12 @@ namespace EncryptedChat.Client.Common.Crypto
             return encryptedKey;
         }
 
+        public string SignData(string data)
+            => this.ownRsa.SignData(data);
+
+        public bool VerifySignature(string data, string signature)
+            => this.otherRsa.VerifySignature(data, signature);
+
         public void ImportEncryptedAesKey(string key)
         {
             var aes1KeyDec = this.ownRsa.DecryptDataAsByteArray(key);
@@ -65,7 +71,7 @@ namespace EncryptedChat.Client.Common.Crypto
         }
 
         public string GetOwnRsaFingerprint() => this.ownRsa.GetSha256Fingerprint();
-        
+
         public string GetOtherRsaFingerprint() => this.otherRsa.GetSha256Fingerprint();
     }
 }
