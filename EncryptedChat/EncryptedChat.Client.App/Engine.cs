@@ -28,7 +28,7 @@ namespace EncryptedChat.Client.App
                 .Build();
 
             this.connection.On<User[]>(nameof(this.UpdateWaitingList), this.UpdateWaitingList);
-            this.connection.On<string, string>(nameof(this.AcceptConnection), this.AcceptConnection);
+            this.connection.On<string, string, string, string>(nameof(this.AcceptConnection), this.AcceptConnection);
             this.connection.On<string, string>(nameof(this.NewMessage), this.NewMessage);
             this.connection.On(nameof(this.Disconnect), this.Disconnect);
 
@@ -315,7 +315,7 @@ namespace EncryptedChat.Client.App
             }
         }
 
-        private void AcceptConnection(string key, string otherUsername)
+        private void AcceptConnection(string aesKey, string otherUsername, string rsaKey, string signature)
         {
             if (this.state != State.Waiting)
             {
@@ -324,7 +324,16 @@ namespace EncryptedChat.Client.App
 
             Console.WriteLine(Messages.InitialisingEncryptedConnection);
 
-            this.communicationsManager.ImportEncryptedAesKey(key);
+            this.communicationsManager.ImportOtherRsaKey(rsaKey);
+            var signatureValid = this.communicationsManager.VerifySignature(aesKey, signature);
+            if (!signatureValid)
+            {
+                Console.WriteLine(Messages.IncomingConnectionSignatureInvalid);
+                this.Disconnect();
+                return;
+            }
+
+            this.communicationsManager.ImportEncryptedAesKey(aesKey);
 
             this.state = State.InChat;
 

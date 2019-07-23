@@ -9,6 +9,7 @@ namespace EncryptedChat.Client.App
         public const string InvalidUserIdSelectedError = "Please type a number from 0 to {0}";
         public const string GeneratingSessionKey = "Generating session key...";
         public const string InitialisingEncryptedConnection = "Initialising encrypted connection...";
+        public const string IncomingConnectionSignatureInvalid = "Could not verify user identity.";
         public const string ConnectedWithUser = "Connected with {0} - {1}!";
         public const string UserListHeader = "Users:";
         public const string UserListItem = "{0} - {1} {2}";
