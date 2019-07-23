@@ -21,8 +21,6 @@ namespace EncryptedChat.Client.App
 
         private async Task SetUpConnection()
         {
-            this.communicationsManager = new EncryptedCommunicationsManager();
-
             Console.WriteLine(Messages.ConnectingToServer, Constants.ServerUrl);
 
             this.connection = new HubConnectionBuilder()
@@ -30,7 +28,7 @@ namespace EncryptedChat.Client.App
                 .Build();
 
             this.connection.On<User[]>(nameof(this.UpdateWaitingList), this.UpdateWaitingList);
-            this.connection.On<string, string>(nameof(this.AcceptConnection), this.AcceptConnection);
+            this.connection.On<string, string, string, string>(nameof(this.AcceptConnection), this.AcceptConnection);
             this.connection.On<string, string>(nameof(this.NewMessage), this.NewMessage);
             this.connection.On(nameof(this.Disconnect), this.Disconnect);
 
@@ -65,6 +63,10 @@ namespace EncryptedChat.Client.App
             this.configurationManager = new ConfigurationManager<MainConfiguration>(Constants.ConfigurationFilePath);
 
             this.LoadUsername();
+
+            this.communicationsManager = new EncryptedCommunicationsManager();
+
+            this.LoadPrivateKey();
         }
 
         public async Task Setup()
@@ -161,22 +163,29 @@ namespace EncryptedChat.Client.App
 
         private async Task ConnectWithUser(User selectedUser)
         {
-            this.state = State.InChat;
-
             Console.Clear();
             Console.WriteLine(Messages.GeneratingSessionKey);
 
-            this.communicationsManager.ImportRsaKey(selectedUser.PublicKey);
+            this.communicationsManager.ImportOtherRsaKey(selectedUser.PublicKey);
             string aesKey = this.communicationsManager.GenerateEncryptedAesKey();
+            string key = this.communicationsManager.ExportOwnRsaKey();
+            string signature = this.communicationsManager.SignData(aesKey);
 
             Console.WriteLine(Messages.InitialisingEncryptedConnection);
 
             await this.connection.InvokeCoreAsync("ConnectToUser", new object[]
             {
-                this.username, selectedUser.ConnectionId, aesKey
+                this.username, selectedUser.ConnectionId, aesKey, key, signature
             });
 
-            this.otherUser = selectedUser;
+            this.CreateChatWithUser(selectedUser);
+        }
+
+        private void CreateChatWithUser(User user)
+        {
+            this.state = State.InChat;
+
+            this.otherUser = user;
 
             bool isTrusted = this.IsUserTrusted(this.otherUser);
 
@@ -185,13 +194,17 @@ namespace EncryptedChat.Client.App
                 : Messages.UserNotTrustedBadge;
 
             Console.WriteLine();
-            Console.WriteLine(Messages.ConnectedWithUser, selectedUser.Username, trustedBadge);
+            Console.WriteLine(Messages.ConnectedWithUser, user.Username, trustedBadge);
             Console.WriteLine();
-            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
+            Console.WriteLine(Messages.CurrentUserFingerprint, this.communicationsManager.GetOwnRsaFingerprint());
             Console.WriteLine();
 
             if (!isTrusted)
             {
+                Console.WriteLine(Messages.OtherUserFingerprint, this.otherUser.Username,
+                    this.communicationsManager.GetOtherRsaFingerprint());
+                Console.WriteLine();
+
                 Console.WriteLine(new string('-', 30));
                 Console.WriteLine();
                 Console.WriteLine(Messages.UserNotTrustedMessage);
@@ -274,9 +287,7 @@ namespace EncryptedChat.Client.App
 
         private async Task JoinAsWaitingUser()
         {
-            this.LoadPrivateKey();
-
-            string pubKey = this.communicationsManager.ExportRsaKey();
+            string pubKey = this.communicationsManager.ExportOwnRsaKey();
 
             Console.WriteLine(Messages.SendingKeyToServer);
 
@@ -301,7 +312,7 @@ namespace EncryptedChat.Client.App
                 this.communicationsManager.GenerateNewRsaKey();
 
                 this.configurationManager.Configuration.PrivateKey =
-                    this.communicationsManager.ExportRsaKey(true);
+                    this.communicationsManager.ExportOwnRsaKey(true);
 
                 this.configurationManager.SaveChanges();
             }
@@ -309,11 +320,11 @@ namespace EncryptedChat.Client.App
             {
                 Console.WriteLine(Messages.LoadingPrivateKey);
 
-                this.communicationsManager.ImportRsaKey(this.configurationManager.Configuration.PrivateKey);
+                this.communicationsManager.ImportOwnRsaKey(this.configurationManager.Configuration.PrivateKey);
             }
         }
 
-        private void AcceptConnection(string key, string otherUsername)
+        private void AcceptConnection(string aesKey, string otherUsername, string rsaKey, string signature)
         {
             if (this.state != State.Waiting)
             {
@@ -322,15 +333,24 @@ namespace EncryptedChat.Client.App
 
             Console.WriteLine(Messages.InitialisingEncryptedConnection);
 
-            this.communicationsManager.ImportEncryptedAesKey(key);
+            this.communicationsManager.ImportOtherRsaKey(rsaKey);
+            var signatureValid = this.communicationsManager.VerifySignature(aesKey, signature);
+            if (!signatureValid)
+            {
+                Console.WriteLine(Messages.IncomingConnectionSignatureInvalid);
+                this.Disconnect();
+                return;
+            }
 
-            this.state = State.InChat;
+            this.communicationsManager.ImportEncryptedAesKey(aesKey);
 
-            Console.WriteLine();
-            Console.WriteLine(Messages.ConnectedWithUser, otherUsername, Messages.UserNotTrustedBadge); // TODO 
-            Console.WriteLine();
-            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetRsaFingerprint());
-            Console.WriteLine();
+            var user = new User
+            {
+                Username = otherUsername,
+                PublicKey = rsaKey
+            };
+
+            this.CreateChatWithUser(user);
         }
 
         private void NewMessage(string encryptedMessage, string messageUsername)

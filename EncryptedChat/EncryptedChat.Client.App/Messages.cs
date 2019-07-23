@@ -9,6 +9,7 @@ namespace EncryptedChat.Client.App
         public const string InvalidUserIdSelectedError = "Please type a number from 0 to {0}";
         public const string GeneratingSessionKey = "Generating session key...";
         public const string InitialisingEncryptedConnection = "Initialising encrypted connection...";
+        public const string IncomingConnectionSignatureInvalid = "Could not verify user identity.";
         public const string ConnectedWithUser = "Connected with {0} - {1}!";
         public const string UserListHeader = "Users:";
         public const string UserListItem = "{0} - {1} {2}";
@@ -20,13 +21,14 @@ namespace EncryptedChat.Client.App
         public const string LoadingPrivateKey = "Loading private key...";
         public const string SendingKeyToServer = "Sending public key to server...";
         public const string WaitingForUser = "Waiting for other user";
-        public const string KeyFingerprint = "Fingerprint: {0}";
+        public const string CurrentUserFingerprint = "Your fingerprint: {0}";
+        public const string OtherUserFingerprint = "{0}'s fingerprint: {1}";
         public const string MessageFormat = "<{0}> {1}";
         public const string LoadingConfiguration = "Loading configuration...";
         public const string UserTrusted = "User trusted.";
         public const string CouldNotTrustUser = "Could not trust user";
 
-        public const string UserNotTrustedMessage = "User not trusted. Verify key fingerprint and type "
+        public const string UserNotTrustedMessage = "User not trusted. Verify key fingerprints and type "
                                                    + Constants.TrustCommand + " to trust user";
     }
 }

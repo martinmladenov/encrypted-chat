@@ -35,10 +35,11 @@ namespace EncryptedChat.Server.Web.Hubs
             await recipient.SendCoreAsync("UpdateWaitingList", new object[] {freeUsers});
         }
 
-        public async Task ConnectToUser(string username, string otherConnectionId, string key)
+        public async Task ConnectToUser(string username, string otherConnectionId, string aesKey,
+            string rsaKey, string signature)
         {
             var result = this.chatService.SetupConnectionToUser(
-                username, otherConnectionId, this.Context.ConnectionId, key);
+                username, otherConnectionId, this.Context.ConnectionId, aesKey);
 
             if (!result)
             {
@@ -46,7 +47,7 @@ namespace EncryptedChat.Server.Web.Hubs
             }
 
             await this.Clients.Client(otherConnectionId)
-                .SendCoreAsync("AcceptConnection", new object[] {key, username});
+                .SendCoreAsync("AcceptConnection", new object[] {aesKey, username, rsaKey, signature});
 
             await this.UpdateClientWaitingList();
         }

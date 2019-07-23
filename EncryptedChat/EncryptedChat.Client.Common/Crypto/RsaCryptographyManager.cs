@@ -26,23 +26,6 @@ namespace EncryptedChat.Client.Common.Crypto
             );
         }
 
-        public string EncryptData(string data)
-        {
-            if (string.IsNullOrWhiteSpace(data))
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            return this.EncryptData(Encoding.UTF8.GetBytes(data));
-        }
-
-        public string DecryptData(string data)
-        {
-            var decryptedData = this.DecryptDataAsByteArray(data);
-
-            return Encoding.UTF8.GetString(decryptedData);
-        }
-
         public byte[] DecryptDataAsByteArray(string data)
         {
             if (string.IsNullOrWhiteSpace(data))
@@ -57,6 +40,33 @@ namespace EncryptedChat.Client.Common.Crypto
 
             return this.rsa.Decrypt(Convert.FromBase64String(data),
                 RSAEncryptionPadding.OaepSHA256);
+        }
+
+        public string SignData(string data)
+        {
+            if (this.rsa == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var signature = this.rsa.SignData(Encoding.UTF8.GetBytes(data),
+                HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+
+            return Convert.ToBase64String(signature);
+        }
+
+        public bool VerifySignature(string data, string signature)
+        {
+            if (this.rsa == null)
+            {
+                throw new InvalidOperationException();
+            }
+
+            var isValid = this.rsa.VerifyData(Encoding.UTF8.GetBytes(data),
+                Convert.FromBase64String(signature),
+                HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+
+            return isValid;
         }
 
         public void GenerateNewKey(int keySize = 4096)
