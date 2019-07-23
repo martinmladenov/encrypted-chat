@@ -170,12 +170,14 @@ namespace EncryptedChat.Client.App
 
             this.communicationsManager.ImportOtherRsaKey(selectedUser.PublicKey);
             string aesKey = this.communicationsManager.GenerateEncryptedAesKey();
+            string key = this.communicationsManager.ExportOwnRsaKey();
+            string signature = this.communicationsManager.SignData(aesKey);
 
             Console.WriteLine(Messages.InitialisingEncryptedConnection);
 
             await this.connection.InvokeCoreAsync("ConnectToUser", new object[]
             {
-                this.username, selectedUser.ConnectionId, aesKey
+                this.username, selectedUser.ConnectionId, aesKey, key, signature
             });
 
             this.otherUser = selectedUser;
