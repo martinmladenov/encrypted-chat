@@ -26,23 +26,6 @@ namespace EncryptedChat.Client.Common.Crypto
             );
         }
 
-        public string EncryptData(string data)
-        {
-            if (string.IsNullOrWhiteSpace(data))
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-
-            return this.EncryptData(Encoding.UTF8.GetBytes(data));
-        }
-
-        public string DecryptData(string data)
-        {
-            var decryptedData = this.DecryptDataAsByteArray(data);
-
-            return Encoding.UTF8.GetString(decryptedData);
-        }
-
         public byte[] DecryptDataAsByteArray(string data)
         {
             if (string.IsNullOrWhiteSpace(data))
