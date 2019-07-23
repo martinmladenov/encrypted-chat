@@ -196,11 +196,15 @@ namespace EncryptedChat.Client.App
             Console.WriteLine();
             Console.WriteLine(Messages.ConnectedWithUser, user.Username, trustedBadge);
             Console.WriteLine();
-            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetOtherRsaFingerprint());
+            Console.WriteLine(Messages.CurrentUserFingerprint, this.communicationsManager.GetOwnRsaFingerprint());
             Console.WriteLine();
 
             if (!isTrusted)
             {
+                Console.WriteLine(Messages.OtherUserFingerprint, this.otherUser.Username,
+                    this.communicationsManager.GetOtherRsaFingerprint());
+                Console.WriteLine();
+
                 Console.WriteLine(new string('-', 30));
                 Console.WriteLine();
                 Console.WriteLine(Messages.UserNotTrustedMessage);
