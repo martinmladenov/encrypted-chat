@@ -163,8 +163,6 @@ namespace EncryptedChat.Client.App
 
         private async Task ConnectWithUser(User selectedUser)
         {
-            this.state = State.InChat;
-
             Console.Clear();
             Console.WriteLine(Messages.GeneratingSessionKey);
 
@@ -180,7 +178,14 @@ namespace EncryptedChat.Client.App
                 this.username, selectedUser.ConnectionId, aesKey, key, signature
             });
 
-            this.otherUser = selectedUser;
+            this.CreateChatWithUser(selectedUser);
+        }
+
+        private void CreateChatWithUser(User user)
+        {
+            this.state = State.InChat;
+
+            this.otherUser = user;
 
             bool isTrusted = this.IsUserTrusted(this.otherUser);
 
@@ -189,7 +194,7 @@ namespace EncryptedChat.Client.App
                 : Messages.UserNotTrustedBadge;
 
             Console.WriteLine();
-            Console.WriteLine(Messages.ConnectedWithUser, selectedUser.Username, trustedBadge);
+            Console.WriteLine(Messages.ConnectedWithUser, user.Username, trustedBadge);
             Console.WriteLine();
             Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetOtherRsaFingerprint());
             Console.WriteLine();
