@@ -340,13 +340,13 @@ namespace EncryptedChat.Client.App
 
             this.communicationsManager.ImportEncryptedAesKey(aesKey);
 
-            this.state = State.InChat;
+            var user = new User
+            {
+                Username = otherUsername,
+                PublicKey = rsaKey
+            };
 
-            Console.WriteLine();
-            Console.WriteLine(Messages.ConnectedWithUser, otherUsername, Messages.UserNotTrustedBadge); // TODO 
-            Console.WriteLine();
-            Console.WriteLine(Messages.KeyFingerprint, this.communicationsManager.GetOwnRsaFingerprint());
-            Console.WriteLine();
+            this.CreateChatWithUser(user);
         }
 
         private void NewMessage(string encryptedMessage, string messageUsername)
