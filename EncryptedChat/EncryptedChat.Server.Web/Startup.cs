@@ -5,6 +5,7 @@ namespace EncryptedChat.Server.Web
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Services;
     using Services.Implementations;
 
@@ -24,7 +25,7 @@ namespace EncryptedChat.Server.Web
             services.AddSingleton<IChatService, ChatService>();
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -38,7 +39,9 @@ namespace EncryptedChat.Server.Web
 
             app.UseHttpsRedirection();
 
-            app.UseSignalR(routes => routes.MapHub<ChatHub>("/chat"));
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints => { endpoints.MapHub<ChatHub>("/chat"); });
         }
     }
 }

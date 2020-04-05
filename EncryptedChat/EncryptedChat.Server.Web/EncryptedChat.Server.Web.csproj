@@ -1,17 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <DebugType>full</DebugType>
     </PropertyGroup>
-
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.HttpsPolicy" Version="2.2.0" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-    </ItemGroup>
-
 
     <ItemGroup>
       <ProjectReference Include="..\EncryptedChat.Models\EncryptedChat.Models.csproj" />
