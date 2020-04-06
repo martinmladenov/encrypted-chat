@@ -22,10 +22,10 @@ namespace EncryptedChat.Client.App
 
         private async Task SetUpConnection()
         {
-            Console.WriteLine(Messages.ConnectingToServer, Constants.ServerUrl);
+            Console.WriteLine(Messages.ConnectingToServer, this.configurationManager.Configuration.ServerUrl);
 
             this.connection = new HubConnectionBuilder()
-                .WithUrl(Constants.ServerUrl)
+                .WithUrl(this.configurationManager.Configuration.ServerUrl)
                 .Build();
 
             this.connection.On<User[]>(nameof(this.UpdateWaitingList), this.UpdateWaitingList);
