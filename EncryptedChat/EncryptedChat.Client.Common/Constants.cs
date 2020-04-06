@@ -1,4 +1,4 @@
-namespace EncryptedChat.Client.App
+namespace EncryptedChat.Client.Common
 {
     public static class Constants
     {

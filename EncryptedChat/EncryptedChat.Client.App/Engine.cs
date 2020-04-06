@@ -3,6 +3,7 @@ namespace EncryptedChat.Client.App
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Common;
     using Common.Configuration;
     using Common.Crypto;
     using Microsoft.AspNetCore.SignalR.Client;
