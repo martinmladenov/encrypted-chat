@@ -1,5 +1,6 @@
 namespace EncryptedChat.Server.Web
 {
+    using System.Threading.Tasks;
     using Hubs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
@@ -42,6 +43,12 @@ namespace EncryptedChat.Server.Web
             app.UseRouting();
 
             app.UseEndpoints(endpoints => { endpoints.MapHub<ChatHub>("/chat"); });
+
+            app.Run(context =>
+            {
+                context.Response.Redirect(Constants.RedirectUrl);
+                return Task.FromResult<object>(null);
+            });
         }
     }
 }
