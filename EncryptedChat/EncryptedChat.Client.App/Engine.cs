@@ -3,6 +3,7 @@ namespace EncryptedChat.Client.App
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using Common;
     using Common.Configuration;
     using Common.Crypto;
     using Microsoft.AspNetCore.SignalR.Client;
@@ -21,10 +22,10 @@ namespace EncryptedChat.Client.App
 
         private async Task SetUpConnection()
         {
-            Console.WriteLine(Messages.ConnectingToServer, Constants.ServerUrl);
+            Console.WriteLine(Messages.ConnectingToServer, this.configurationManager.Configuration.ServerUrl);
 
             this.connection = new HubConnectionBuilder()
-                .WithUrl(Constants.ServerUrl)
+                .WithUrl(this.configurationManager.Configuration.ServerUrl)
                 .Build();
 
             this.connection.On<User[]>(nameof(this.UpdateWaitingList), this.UpdateWaitingList);
@@ -86,7 +87,7 @@ namespace EncryptedChat.Client.App
             {
                 string input = Console.ReadLine();
 
-                if (input == Constants.ExitCommand ||
+                if (input == Commands.ExitCommand ||
                     this.connection.State == HubConnectionState.Disconnected ||
                     this.state == State.Disconnected)
                 {
@@ -106,7 +107,7 @@ namespace EncryptedChat.Client.App
                         await this.UserSelect(input);
                         break;
                     case State.InChat:
-                        if (input == Constants.TrustCommand)
+                        if (input == Commands.TrustCommand)
                         {
                             this.TrustCurrentUser();
                             break;
