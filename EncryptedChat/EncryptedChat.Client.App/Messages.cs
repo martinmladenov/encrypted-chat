@@ -29,6 +29,6 @@ namespace EncryptedChat.Client.App
         public const string CouldNotTrustUser = "Could not trust user";
 
         public const string UserNotTrustedMessage = "User not trusted. Verify key fingerprints and type "
-                                                   + Constants.TrustCommand + " to trust user";
+                                                   + Commands.TrustCommand + " to trust user";
     }
 }

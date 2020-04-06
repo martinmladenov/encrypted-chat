@@ -86,7 +86,7 @@ namespace EncryptedChat.Client.App
             {
                 string input = Console.ReadLine();
 
-                if (input == Constants.ExitCommand ||
+                if (input == Commands.ExitCommand ||
                     this.connection.State == HubConnectionState.Disconnected ||
                     this.state == State.Disconnected)
                 {
@@ -106,7 +106,7 @@ namespace EncryptedChat.Client.App
                         await this.UserSelect(input);
                         break;
                     case State.InChat:
-                        if (input == Constants.TrustCommand)
+                        if (input == Commands.TrustCommand)
                         {
                             this.TrustCurrentUser();
                             break;
