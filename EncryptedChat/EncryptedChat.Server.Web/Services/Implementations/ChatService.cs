@@ -2,6 +2,7 @@ namespace EncryptedChat.Server.Web.Services.Implementations
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using Models;
 
     public class ChatService : IChatService
@@ -16,6 +17,7 @@ namespace EncryptedChat.Server.Web.Services.Implementations
         public bool AddWaitingUser(string connectionId, string username, string publicKey)
         {
             if (string.IsNullOrWhiteSpace(username) ||
+                !Regex.IsMatch(username, Constants.UsernameRegex) ||
                 string.IsNullOrWhiteSpace(publicKey) ||
                 this.users.Any(u => u.Username == username))
             {
