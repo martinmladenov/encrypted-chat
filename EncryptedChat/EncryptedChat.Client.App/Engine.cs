@@ -7,7 +7,7 @@ namespace EncryptedChat.Client.App
     using Common.Configuration;
     using Common.Crypto;
     using Microsoft.AspNetCore.SignalR.Client;
-    using Models;
+    using Common.Models;
 
     public class Engine
     {
