@@ -11,5 +11,15 @@ namespace EncryptedChat.Server.Web.Models
         public string OtherUserConnectionId { get; set; }
 
         public string PublicKey { get; set; }
+
+        public ClientUser ToClientUser()
+        {
+            return new ClientUser
+            {
+                Id = this.Id,
+                Username = this.Username,
+                PublicKey = this.PublicKey
+            };
+        }
     }
 }
