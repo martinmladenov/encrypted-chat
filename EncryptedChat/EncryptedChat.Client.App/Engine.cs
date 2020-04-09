@@ -176,7 +176,7 @@ namespace EncryptedChat.Client.App
 
             await this.connection.InvokeCoreAsync("ConnectToUser", new object[]
             {
-                this.username, selectedUser.ConnectionId, aesKey, key, signature
+                this.username, selectedUser.Id, aesKey, key, signature
             });
 
             this.CreateChatWithUser(selectedUser);
