@@ -8,7 +8,7 @@ namespace EncryptedChat.Server.Web.Services
 
         User[] GetWaitingUsers();
 
-        bool SetupConnectionToUser(string currUsername, string otherConnectionId, string currConnectionId,
+        string SetupConnectionToUser(string currUsername, string otherId, string currConnectionId,
             string key);
 
         User GetUserByConnectionId(string connectionId);

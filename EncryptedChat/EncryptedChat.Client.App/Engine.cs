@@ -7,7 +7,7 @@ namespace EncryptedChat.Client.App
     using Common.Configuration;
     using Common.Crypto;
     using Microsoft.AspNetCore.SignalR.Client;
-    using Models;
+    using Common.Models;
 
     public class Engine
     {
@@ -176,7 +176,7 @@ namespace EncryptedChat.Client.App
 
             await this.connection.InvokeCoreAsync("ConnectToUser", new object[]
             {
-                this.username, selectedUser.ConnectionId, aesKey, key, signature
+                this.username, selectedUser.Id, aesKey, key, signature
             });
 
             this.CreateChatWithUser(selectedUser);

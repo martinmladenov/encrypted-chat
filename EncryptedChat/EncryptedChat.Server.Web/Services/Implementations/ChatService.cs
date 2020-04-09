@@ -1,5 +1,6 @@
 namespace EncryptedChat.Server.Web.Services.Implementations
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using Models;
@@ -24,6 +25,7 @@ namespace EncryptedChat.Server.Web.Services.Implementations
 
             this.users.Add(new User
             {
+                Id = Guid.NewGuid().ToString(),
                 ConnectionId = connectionId, Username = username, PublicKey = publicKey
             });
 
@@ -37,32 +39,36 @@ namespace EncryptedChat.Server.Web.Services.Implementations
             return freeUsers;
         }
 
-        public bool SetupConnectionToUser(string currUsername, string otherConnectionId, string currConnectionId,
+        public string SetupConnectionToUser(string currUsername, string otherId, string currConnectionId,
             string key)
         {
             if (string.IsNullOrWhiteSpace(currUsername) ||
-                string.IsNullOrWhiteSpace(otherConnectionId) ||
+                string.IsNullOrWhiteSpace(otherId) ||
                 string.IsNullOrWhiteSpace(currConnectionId) ||
                 string.IsNullOrWhiteSpace(key))
             {
-                return false;
+                return null;
             }
 
-            var otherUser = this.users.SingleOrDefault(u => u.ConnectionId == otherConnectionId);
+            var otherUser = this.users.SingleOrDefault(u => u.Id == otherId);
 
             if (otherUser == null || otherUser.OtherUserConnectionId != null)
             {
-                return false;
+                return null;
             }
 
-            var currUser = new User {ConnectionId = currConnectionId, Username = currUsername};
+            var currUser = new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                ConnectionId = currConnectionId, Username = currUsername
+            };
 
             this.users.Add(currUser);
 
             otherUser.OtherUserConnectionId = currUser.ConnectionId;
-            currUser.OtherUserConnectionId = otherConnectionId;
+            currUser.OtherUserConnectionId = otherUser.ConnectionId;
 
-            return true;
+            return otherUser.ConnectionId;
         }
 
         public User GetUserByConnectionId(string connectionId)

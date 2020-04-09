@@ -5,8 +5,4 @@
         <DebugType>full</DebugType>
     </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\EncryptedChat.Models\EncryptedChat.Models.csproj" />
-    </ItemGroup>
-
 </Project>
