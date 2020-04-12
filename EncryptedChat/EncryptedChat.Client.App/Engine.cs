@@ -50,6 +50,10 @@ namespace EncryptedChat.Client.App
                 return;
             }
 
+            Console.WriteLine();
+            Console.WriteLine(Messages.UsernameInfo);
+            Console.WriteLine();
+
             do
             {
                 Console.Write(Messages.UsernamePrompt);
