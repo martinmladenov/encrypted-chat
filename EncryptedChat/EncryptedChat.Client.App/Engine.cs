@@ -269,24 +269,29 @@ namespace EncryptedChat.Client.App
                 return;
             }
 
-            this.waitingUsers = users;
+            Regex usernameRegex = new Regex(Constants.UsernameRegex);
+
+            this.waitingUsers = users.Where(user =>
+                    !string.IsNullOrWhiteSpace(user.Username) &&
+                    usernameRegex.IsMatch(user.Username))
+                .ToArray();
 
             Console.WriteLine();
             Console.WriteLine(Messages.UserListHeader);
 
-            if (!users.Any())
+            if (this.waitingUsers.Length == 0)
             {
                 Console.WriteLine(Messages.UserListNoUsers);
             }
             else
             {
-                for (int i = 0; i < users.Length; i++)
+                for (int i = 0; i < this.waitingUsers.Length; i++)
                 {
-                    string trustedBadge = this.IsUserTrusted(users[i])
+                    string trustedBadge = this.IsUserTrusted(this.waitingUsers[i])
                         ? Messages.UserTrustedBadge
                         : Messages.UserNotTrustedBadge;
 
-                    Console.WriteLine(Messages.UserListItem, i + 1, users[i].Username, trustedBadge);
+                    Console.WriteLine(Messages.UserListItem, i + 1, this.waitingUsers[i].Username, trustedBadge);
                 }
             }
 
