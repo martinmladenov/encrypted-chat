@@ -7,7 +7,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\EncryptedChat.Client.Common\EncryptedChat.Client.Common.csproj" />
-      <ProjectReference Include="..\EncryptedChat.Models\EncryptedChat.Models.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,6 +1,7 @@
 namespace EncryptedChat.Server.Web.Hubs
 {
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.SignalR;
     using Services;
@@ -28,20 +29,20 @@ namespace EncryptedChat.Server.Web.Hubs
 
         private async Task UpdateClientWaitingList(string recipientId = null)
         {
-            var freeUsers = this.chatService.GetWaitingUsers();
+            var freeUsers = this.chatService.GetWaitingUsers().Select(u => u.ToClientUser()).ToArray();
 
             var recipient = recipientId == null ? this.Clients.All : this.Clients.Client(recipientId);
 
             await recipient.SendCoreAsync("UpdateWaitingList", new object[] {freeUsers});
         }
 
-        public async Task ConnectToUser(string username, string otherConnectionId, string aesKey,
+        public async Task ConnectToUser(string username, string otherId, string aesKey,
             string rsaKey, string signature)
         {
-            var result = this.chatService.SetupConnectionToUser(
-                username, otherConnectionId, this.Context.ConnectionId, aesKey);
+            var otherConnectionId = this.chatService.SetupConnectionToUser(
+                username, otherId, this.Context.ConnectionId, aesKey);
 
-            if (!result)
+            if (otherConnectionId == null)
             {
                 return;
             }
