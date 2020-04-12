@@ -276,6 +276,8 @@ namespace EncryptedChat.Client.App
                     usernameRegex.IsMatch(user.Username))
                 .ToArray();
 
+            int invalidUsernamesDifference = users.Length - this.waitingUsers.Length;
+
             Console.WriteLine();
             Console.WriteLine(Messages.UserListHeader);
 
@@ -293,6 +295,12 @@ namespace EncryptedChat.Client.App
 
                     Console.WriteLine(Messages.UserListItem, i + 1, this.waitingUsers[i].Username, trustedBadge);
                 }
+            }
+
+            if (invalidUsernamesDifference != 0)
+            {
+                Console.WriteLine(Messages.UserListInvalidUsername, invalidUsernamesDifference,
+                    invalidUsernamesDifference != 1 ? "s" : "");
             }
 
             Console.WriteLine(Messages.UserListJoin);
