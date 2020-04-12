@@ -10,6 +10,7 @@ namespace EncryptedChat.Client.App
         public const string GeneratingSessionKey = "Generating session key...";
         public const string InitialisingEncryptedConnection = "Initialising encrypted connection...";
         public const string IncomingConnectionSignatureInvalid = "Could not verify user identity.";
+        public const string OtherUsernameInvalid = "The other user's username is invalid.";
         public const string ConnectedWithUser = "Connected with {0} - {1}!";
         public const string UserListHeader = "Users:";
         public const string UserListItem = "{0} - {1} {2}";

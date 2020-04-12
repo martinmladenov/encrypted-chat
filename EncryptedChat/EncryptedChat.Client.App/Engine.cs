@@ -193,6 +193,15 @@ namespace EncryptedChat.Client.App
         {
             this.state = State.InChat;
 
+            Regex usernameRegex = new Regex(Constants.UsernameRegex);
+
+            if (string.IsNullOrWhiteSpace(user.Username) || !usernameRegex.IsMatch(user.Username))
+            {
+                Console.WriteLine(Messages.OtherUsernameInvalid);
+                this.Disconnect();
+                return;
+            }
+
             this.otherUser = user;
 
             bool isTrusted = this.IsUserTrusted(this.otherUser);
