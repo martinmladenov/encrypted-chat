@@ -2,6 +2,7 @@ namespace EncryptedChat.Client.App
 {
     using System;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Common;
     using Common.Configuration;
@@ -42,7 +43,9 @@ namespace EncryptedChat.Client.App
         {
             this.username = this.configurationManager.Configuration.Username;
 
-            if (!string.IsNullOrWhiteSpace(this.username))
+            Regex usernameRegex = new Regex(Constants.UsernameRegex);
+
+            if (!string.IsNullOrWhiteSpace(this.username) && usernameRegex.IsMatch(this.username))
             {
                 return;
             }
@@ -51,7 +54,7 @@ namespace EncryptedChat.Client.App
             {
                 Console.Write(Messages.UsernamePrompt);
                 this.username = Console.ReadLine();
-            } while (string.IsNullOrWhiteSpace(this.username));
+            } while (string.IsNullOrWhiteSpace(this.username) || !usernameRegex.IsMatch(this.username));
 
             this.configurationManager.Configuration.Username = this.username;
             this.configurationManager.SaveChanges();
