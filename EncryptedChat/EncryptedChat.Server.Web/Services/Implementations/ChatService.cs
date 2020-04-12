@@ -45,6 +45,7 @@ namespace EncryptedChat.Server.Web.Services.Implementations
             string key)
         {
             if (string.IsNullOrWhiteSpace(currUsername) ||
+                !Regex.IsMatch(currUsername, Constants.UsernameRegex) ||
                 string.IsNullOrWhiteSpace(otherId) ||
                 string.IsNullOrWhiteSpace(currConnectionId) ||
                 string.IsNullOrWhiteSpace(key))
