@@ -2,6 +2,7 @@ namespace EncryptedChat.Client.App
 {
     using System;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Common;
     using Common.Configuration;
@@ -42,16 +43,22 @@ namespace EncryptedChat.Client.App
         {
             this.username = this.configurationManager.Configuration.Username;
 
-            if (!string.IsNullOrWhiteSpace(this.username))
+            Regex usernameRegex = new Regex(Constants.UsernameRegex);
+
+            if (!string.IsNullOrWhiteSpace(this.username) && usernameRegex.IsMatch(this.username))
             {
                 return;
             }
+
+            Console.WriteLine();
+            Console.WriteLine(Messages.UsernameInfo);
+            Console.WriteLine();
 
             do
             {
                 Console.Write(Messages.UsernamePrompt);
                 this.username = Console.ReadLine();
-            } while (string.IsNullOrWhiteSpace(this.username));
+            } while (string.IsNullOrWhiteSpace(this.username) || !usernameRegex.IsMatch(this.username));
 
             this.configurationManager.Configuration.Username = this.username;
             this.configurationManager.SaveChanges();
@@ -186,6 +193,15 @@ namespace EncryptedChat.Client.App
         {
             this.state = State.InChat;
 
+            Regex usernameRegex = new Regex(Constants.UsernameRegex);
+
+            if (string.IsNullOrWhiteSpace(user.Username) || !usernameRegex.IsMatch(user.Username))
+            {
+                Console.WriteLine(Messages.OtherUsernameInvalid);
+                this.Disconnect();
+                return;
+            }
+
             this.otherUser = user;
 
             bool isTrusted = this.IsUserTrusted(this.otherUser);
@@ -262,25 +278,38 @@ namespace EncryptedChat.Client.App
                 return;
             }
 
-            this.waitingUsers = users;
+            Regex usernameRegex = new Regex(Constants.UsernameRegex);
+
+            this.waitingUsers = users.Where(user =>
+                    !string.IsNullOrWhiteSpace(user.Username) &&
+                    usernameRegex.IsMatch(user.Username))
+                .ToArray();
+
+            int invalidUsernamesDifference = users.Length - this.waitingUsers.Length;
 
             Console.WriteLine();
             Console.WriteLine(Messages.UserListHeader);
 
-            if (!users.Any())
+            if (this.waitingUsers.Length == 0)
             {
                 Console.WriteLine(Messages.UserListNoUsers);
             }
             else
             {
-                for (int i = 0; i < users.Length; i++)
+                for (int i = 0; i < this.waitingUsers.Length; i++)
                 {
-                    string trustedBadge = this.IsUserTrusted(users[i])
+                    string trustedBadge = this.IsUserTrusted(this.waitingUsers[i])
                         ? Messages.UserTrustedBadge
                         : Messages.UserNotTrustedBadge;
 
-                    Console.WriteLine(Messages.UserListItem, i + 1, users[i].Username, trustedBadge);
+                    Console.WriteLine(Messages.UserListItem, i + 1, this.waitingUsers[i].Username, trustedBadge);
                 }
+            }
+
+            if (invalidUsernamesDifference != 0)
+            {
+                Console.WriteLine(Messages.UserListInvalidUsername, invalidUsernamesDifference,
+                    invalidUsernamesDifference != 1 ? "s" : "");
             }
 
             Console.WriteLine(Messages.UserListJoin);
