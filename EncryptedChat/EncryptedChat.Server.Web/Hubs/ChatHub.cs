@@ -21,6 +21,7 @@ namespace EncryptedChat.Server.Web.Hubs
 
             if (!result)
             {
+                this.Context.Abort();
                 return;
             }
 
@@ -44,6 +45,7 @@ namespace EncryptedChat.Server.Web.Hubs
 
             if (otherConnectionId == null)
             {
+                this.Context.Abort();
                 return;
             }
 
